@@ -12,8 +12,7 @@ ENV NEXTAUTH_SECRET="build_secret_must_be_at_least_32_characters_long_for_nextjs
 # Dependency layer — cache-friendly: only rerun when package*.json changes
 COPY package*.json ./
 COPY prisma ./prisma/
-RUN npm ci --include=dev --legacy-peer-deps \
-    && npm cache clean --force
+RUN npm ci --include=dev --legacy-peer-deps
 
 # Source & build
 COPY . .
@@ -21,7 +20,7 @@ RUN npx prisma generate && npm run build
 
 # Strip devDeps from node_modules after build
 # tsx needed at runtime, kept explicitly
-RUN npm prune --omit=dev && npm install --no-save tsx typescript
+RUN npm prune --include=dev && npm install --no-save tsx typescript
 
 # Production image
 FROM node:26-alpine AS runner
